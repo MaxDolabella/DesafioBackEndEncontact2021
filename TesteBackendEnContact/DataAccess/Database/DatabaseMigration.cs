@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace TesteBackendEnContact.Database
+namespace TesteBackendEnContact.DataAccess.Database
 {
     [Migration(1)]
     public class DatabaseMigration : Migration

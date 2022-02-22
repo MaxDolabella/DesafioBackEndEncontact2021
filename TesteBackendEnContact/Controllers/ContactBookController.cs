@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TesteBackendEnContact.Core.Domain.ContactBook;
-using TesteBackendEnContact.Core.Interface.ContactBook;
-using TesteBackendEnContact.Repository.Interface;
+using TesteBackendEnContact.Controllers.Models;
+using TesteBackendEnContact.Core.Interfaces.Entities;
+using TesteBackendEnContact.Core.Interfaces.Repositories;
 
 namespace TesteBackendEnContact.Controllers
 {
@@ -13,34 +13,41 @@ namespace TesteBackendEnContact.Controllers
     public class ContactBookController : ControllerBase
     {
         private readonly ILogger<ContactBookController> _logger;
+        private readonly IContactBookRepository _contactBookRepository;
 
-        public ContactBookController(ILogger<ContactBookController> logger)
+        public ContactBookController(
+            ILogger<ContactBookController> logger,
+            IContactBookRepository contactBookRepository)
         {
             _logger = logger;
+            _contactBookRepository = contactBookRepository;
         }
 
         [HttpPost]
-        public async Task<IContactBook> Post(ContactBook contactBook, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<ActionResult<IContactBook>> Post(SaveContactBookRequest contactBook)
         {
-            return await contactBookRepository.SaveAsync(contactBook);
+            var createdObj = await _contactBookRepository.SaveAsync(contactBook.ToContactBook());
+            var param = new { id = createdObj.Id };
+
+            return CreatedAtAction(nameof(Get), param, createdObj);
         }
 
         [HttpDelete]
-        public async Task Delete(int id, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task Delete(int id)
         {
-            await contactBookRepository.DeleteAsync(id);
+            await _contactBookRepository.DeleteAsync(id);
         }
 
         [HttpGet]
-        public async Task<IEnumerable<IContactBook>> Get([FromServices] IContactBookRepository contactBookRepository)
+        public async Task<ActionResult<IEnumerable<IContactBook>>> Get()
         {
-            return await contactBookRepository.GetAllAsync();
+            return Ok(await _contactBookRepository.GetAllAsync());
         }
 
         [HttpGet("{id}")]
-        public async Task<IContactBook> Get(int id, [FromServices] IContactBookRepository contactBookRepository)
+        public async Task<IContactBook> Get(int id)
         {
-            return await contactBookRepository.GetAsync(id);
+            return await _contactBookRepository.GetAsync(id);
         }
     }
 }

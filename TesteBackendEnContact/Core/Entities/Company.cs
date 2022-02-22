@@ -1,6 +1,6 @@
-﻿using TesteBackendEnContact.Core.Interface.ContactBook.Company;
+﻿using TesteBackendEnContact.Core.Interfaces.Entities;
 
-namespace TesteBackendEnContact.Core.Domain.ContactBook.Company
+namespace TesteBackendEnContact.Core.Entities
 {
     public class Company : ICompany
     {
@@ -12,6 +12,7 @@ namespace TesteBackendEnContact.Core.Domain.ContactBook.Company
         {
             Id = id;
             ContactBookId = contactBookId;
+
             Name = name;
         }
     }

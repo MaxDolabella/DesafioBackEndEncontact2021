@@ -7,9 +7,11 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 
 using System;
-using TesteBackendEnContact.Database;
-using TesteBackendEnContact.Repository;
-using TesteBackendEnContact.Repository.Interface;
+using TesteBackendEnContact.Core.Interfaces.Repositories;
+using TesteBackendEnContact.Core.Interfaces.Services;
+using TesteBackendEnContact.Core.Services;
+using TesteBackendEnContact.DataAccess.Database;
+using TesteBackendEnContact.DataAccess.Repositories;
 
 namespace TesteBackendEnContact
 {
@@ -22,9 +24,10 @@ namespace TesteBackendEnContact
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -34,16 +37,19 @@ namespace TesteBackendEnContact
             services.AddFluentMigratorCore()
                     .ConfigureRunner(rb => rb
                         .AddSQLite()
-                        .WithGlobalConnectionString(Configuration.GetConnectionString("DefaultConnection"))
+                        .WithGlobalConnectionString(connectionString)
                         .ScanIn(typeof(Startup).Assembly).For.Migrations())
                     .AddLogging(lb => lb.AddFluentMigratorConsole());
 
-            services.AddSingleton(new DatabaseConfig { ConnectionString = Configuration.GetConnectionString("DefaultConnection") });
+            services.AddSingleton(new DatabaseConfig { ConnectionString = connectionString });
+
             services.AddScoped<IContactBookRepository, ContactBookRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
+            services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<IContactService, ContactService>();
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())

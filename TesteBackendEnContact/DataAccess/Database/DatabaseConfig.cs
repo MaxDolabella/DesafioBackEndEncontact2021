@@ -1,4 +1,4 @@
-﻿namespace TesteBackendEnContact.Database
+﻿namespace TesteBackendEnContact.DataAccess.Database
 {
     public class DatabaseConfig
     {

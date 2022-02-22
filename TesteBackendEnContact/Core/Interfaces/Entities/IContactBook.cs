@@ -1,4 +1,4 @@
-﻿namespace TesteBackendEnContact.Core.Interface.ContactBook
+﻿namespace TesteBackendEnContact.Core.Interfaces.Entities
 {
     public interface IContactBook
     {
